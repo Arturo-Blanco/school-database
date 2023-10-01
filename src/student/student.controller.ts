@@ -1,29 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { StudentService } from './student.service';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
+import { CreateStudentDto, StudentAddressDto, StudentClassDto } from './dto/student.dto';
+import { Student } from './entities/student.entity';
 
 @Controller('student')
 export class StudentController {
-  constructor(private readonly studentService: StudentService) {}
+  constructor(private readonly studentService: StudentService) { }
 
-  @Post()
-  create(@Body() createStudentDto: CreateStudentDto) {
-    return this.studentService.create(createStudentDto);
+  @Post('addStudent')
+  async getCreateStudent(@Body() createStudentDto: CreateStudentDto) {
+    return await this.studentService.createStudent(createStudentDto);
   }
 
-  @Get()
-  findAll() {
-    return this.studentService.findAll();
+  @Post('addStudentAddress')
+  async getAddStudentAddress(@Body() studentAddressDto: StudentAddressDto) {
+    return await this.studentService.addStudentAddress(studentAddressDto);
+  }
+
+  @Post('addStudentClass')
+  async getAddStudentClass(@Body() studentClassDto: StudentClassDto) {
+    return await this.studentService.addStudentClass(studentClassDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.studentService.findOne(+id);
+  async getStudentById(@Param('id', ParseIntPipe) studentId: number): Promise<Student> {
+    return await this.studentService.getStudentById(studentId);
   }
 
+  @Get('relation/:id')
+  async getStudentRelations(@Param('id', ParseIntPipe) studentId: number): Promise<Student> {
+    return await this.studentService.getStudentRelation(studentId);
+  }
+  @Get('all')
+  async getFindAll(): Promise<Student[]> {
+    return await this.studentService.findAll();
+  }
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
+  update(@Param('id') id: string, @Body() updateStudentDto) {
     return this.studentService.update(+id, updateStudentDto);
   }
 
