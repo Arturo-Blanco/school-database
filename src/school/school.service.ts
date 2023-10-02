@@ -14,7 +14,7 @@ export class SchoolService {
         private readonly cityRepository: Repository<City>
     ) { }
 
-    async addSchool(createSchoolDto: CreateSchoolDto): Promise<string> {
+    async createSchool(createSchoolDto: CreateSchoolDto): Promise<string> {
         const { name, address, cityId } = createSchoolDto;
         try {
             const city: City = await this.cityRepository.findOne({ where: { id: cityId } });

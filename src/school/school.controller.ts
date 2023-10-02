@@ -8,8 +8,8 @@ export class SchoolController {
     constructor(private readonly schoolServie: SchoolService) { }
 
     @Post('add')
-    async getAddSchool(@Body() createSchoolDto: CreateSchoolDto): Promise<string> {
-        return await this.schoolServie.addSchool(createSchoolDto);
+    async getCreateSchool(@Body() createSchoolDto: CreateSchoolDto): Promise<string> {
+        return await this.schoolServie.createSchool(createSchoolDto);
     }
 
     @Get(':id')

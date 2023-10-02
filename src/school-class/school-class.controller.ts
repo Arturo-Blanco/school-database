@@ -1,34 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { SchoolClassService } from './school-class.service';
-import { CreateSchoolClassDto } from './dto/create-school-class.dto';
-import { UpdateSchoolClassDto } from './dto/update-school-class.dto';
+import { CreateSchoolClassDto, UpdateSchoolClassDto } from './dto/school-class.dto';
+import { SchoolClass } from './entities/school-class.entity';
 
 @Controller('school-class')
 export class SchoolClassController {
-  constructor(private readonly schoolClassService: SchoolClassService) {}
+  constructor(private readonly schoolClassService: SchoolClassService) { }
 
-  @Post()
-  create(@Body() createSchoolClassDto: CreateSchoolClassDto) {
-    return this.schoolClassService.create(createSchoolClassDto);
+  @Post('add')
+  async getCreateSchoolClass(@Body() createSchoolClassDto: CreateSchoolClassDto): Promise<string> {
+    return await this.schoolClassService.createSchoolClass(createSchoolClassDto);
   }
 
-  @Get()
-  findAll() {
-    return this.schoolClassService.findAll();
+  @Get('all')
+  async findAll(): Promise<SchoolClass[]> {
+    return await this.schoolClassService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.schoolClassService.findOne(+id);
+  async getClassById(@Param('id', ParseIntPipe) schoolClassId: number): Promise<SchoolClass> {
+    return await this.schoolClassService.findOne(schoolClassId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSchoolClassDto: UpdateSchoolClassDto) {
-    return this.schoolClassService.update(+id, updateSchoolClassDto);
+  @Patch('update/:id')
+  async getUpdate(@Param('id', ParseIntPipe) schoolClassId: number, @Body() updateSchoolClassDto: UpdateSchoolClassDto): Promise<string> {
+    return await this.schoolClassService.update(schoolClassId, updateSchoolClassDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.schoolClassService.remove(+id);
+  @Delete('remove/:id')
+  async getRemove(@Param('id', ParseIntPipe) schoolClassId: number): Promise<string> {
+    return await this.schoolClassService.remove(schoolClassId);
   }
 }
