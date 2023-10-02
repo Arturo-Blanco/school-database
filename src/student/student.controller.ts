@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { StudentService } from './student.service';
-import { CreateStudentDto, StudentAddressDto, StudentClassDto } from './dto/student.dto';
+import { CreateStudentDto, StudentAddressDto, StudentClassDto, UpdateStudentDto } from './dto/student.dto';
 import { Student } from './entities/student.entity';
 
 @Controller('student')
@@ -24,24 +24,26 @@ export class StudentController {
 
   @Get(':id')
   async getStudentById(@Param('id', ParseIntPipe) studentId: number): Promise<Student> {
-    return await this.studentService.getStudentById(studentId);
+    return await this.studentService.findById(studentId);
   }
 
   @Get('relation/:id')
   async getStudentRelations(@Param('id', ParseIntPipe) studentId: number): Promise<Student> {
-    return await this.studentService.getStudentRelation(studentId);
+    return await this.studentService.findWithRelation(studentId);
   }
+
   @Get('all')
   async getFindAll(): Promise<Student[]> {
     return await this.studentService.findAll();
   }
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStudentDto) {
-    return this.studentService.update(+id, updateStudentDto);
+
+  @Patch('update/:id')
+  async getUpdateStudent(@Param('id', ParseIntPipe) studentId: number, @Body() updateStudentDto: UpdateStudentDto): Promise<string> {
+    return await this.studentService.updateStudent(studentId, updateStudentDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentService.remove(+id);
+  @Delete('remove/:id')
+  async getRemoveStudent(@Param('id', ParseIntPipe) studentId: number): Promise<string> {
+    return await this.studentService.removeStudent(studentId);
   }
 }

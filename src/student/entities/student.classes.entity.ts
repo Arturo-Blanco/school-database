@@ -1,7 +1,7 @@
 import { Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { Student } from "./student.entity";
 import { SchoolClass } from "src/school-class/entities/school-class.entity";
-import { Asistance } from "src/asistance/entities/asistance.entity";
+import { Attendance } from "src/attendance/entities/attendance.entity";
 
 @Entity({ name: 'students_classes' })
 export class StudentClass {
@@ -20,9 +20,9 @@ export class StudentClass {
     @JoinColumn({ name: 'class_id' })
     schoolClass: SchoolClass;
 
-    @OneToMany(() => Asistance, asistance => asistance.studentClass)
+    @OneToMany(() => Attendance, attendance => attendance.studentClass)
     @JoinColumn()
-    asistances: Asistance[];
+    attendances: Attendance[];
 
     constructor(student_id: number, class_id: number) {
         this.student_id = student_id;
