@@ -8,8 +8,8 @@ export class AttendanceController {
     constructor(private readonly attendanceService: AttendanceService) { }
 
     @Post('add')
-    async getAddAttendance(@Body() attendanceDto: AttendanceDto): Promise<string> {
-        return await this.attendanceService.addAttendance(attendanceDto);
+    async getCreateAttendance(@Body() attendanceDto: AttendanceDto): Promise<string> {
+        return await this.attendanceService.createAttendance(attendanceDto);
     }
 
     @Get('all')

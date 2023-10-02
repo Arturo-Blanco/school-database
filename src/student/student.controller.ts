@@ -8,17 +8,17 @@ export class StudentController {
   constructor(private readonly studentService: StudentService) { }
 
   @Post('add')
-  async getCreateStudent(@Body() createStudentDto: CreateStudentDto) {
+  async getCreateStudent(@Body() createStudentDto: CreateStudentDto): Promise<Student> {
     return await this.studentService.createStudent(createStudentDto);
   }
 
   @Post('addAddress')
-  async getAddStudentAddress(@Body() studentAddressDto: StudentAddressDto) {
+  async getAddStudentAddress(@Body() studentAddressDto: StudentAddressDto): Promise<string> {
     return await this.studentService.addStudentAddress(studentAddressDto);
   }
 
   @Post('addClass')
-  async getAddStudentClass(@Body() studentClassDto: StudentClassDto) {
+  async getAddStudentClass(@Body() studentClassDto: StudentClassDto): Promise<string> {
     return await this.studentService.addStudentClass(studentClassDto);
   }
 

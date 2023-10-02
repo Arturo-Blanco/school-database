@@ -8,8 +8,8 @@ export class CityController {
   constructor(private readonly cityService: CityService) { }
 
   @Post('add')
-  async getAddCity(@Body() createCityDto: CreateCityDto): Promise<City> {
-    return await this.cityService.addCity(createCityDto);
+  async getCreateCity(@Body() createCityDto: CreateCityDto): Promise<City> {
+    return await this.cityService.createCity(createCityDto);
   }
 
   @Get(':id')

@@ -14,7 +14,7 @@ export class AttendanceService {
         private readonly studentClassRepository: Repository<StudentClass>
     ) { }
 
-    async addAttendance(attendanceDto: AttendanceDto): Promise<string> {
+    async createAttendance(attendanceDto: AttendanceDto): Promise<string> {
         const { studentId, classId } = attendanceDto;
         try {
             const studentClassCriteria: FindOneOptions = { where: { student_id: studentId, class_id: classId } };

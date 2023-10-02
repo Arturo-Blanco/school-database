@@ -12,7 +12,7 @@ export class CityService {
     private readonly cityRepository: Repository<City>
   ) { }
 
-  async addCity(createCityDto: CreateCityDto): Promise<City> {
+  async createCity(createCityDto: CreateCityDto): Promise<City> {
     const { name } = createCityDto;
     try {
       const newCity: City = new City(name);
