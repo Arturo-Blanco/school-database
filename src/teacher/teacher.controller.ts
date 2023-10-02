@@ -1,34 +1,44 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { TeacherService } from './teacher.service';
-import { CreateTeacherDto } from './dto/create-teacher.dto';
-import { UpdateTeacherDto } from './dto/update-teacher.dto';
+import { CreateTeacherAddressDto, CreateTeacherDto, UpdateTeacherDto } from './dto/teacher.dto';
+import { Teacher } from './entities/teacher.entity';
 
 @Controller('teacher')
 export class TeacherController {
-  constructor(private readonly teacherService: TeacherService) {}
+  constructor(private readonly teacherService: TeacherService) { }
 
-  @Post()
-  create(@Body() createTeacherDto: CreateTeacherDto) {
-    return this.teacherService.create(createTeacherDto);
+  @Post('add')
+  async getCreateTeacher(@Body() createTeacherDto: CreateTeacherDto): Promise<Teacher> {
+    return await this.teacherService.createTeacher(createTeacherDto);
   }
 
-  @Get()
-  findAll() {
-    return this.teacherService.findAll();
+  @Post('addAddress')
+  async getTeacherAddress(@Body() createTeacherAddressDto: CreateTeacherAddressDto): Promise<string> {
+    return await this.teacherService.addTeacherAddress(createTeacherAddressDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.teacherService.findOne(+id);
+  async getTeacherById(@Param('id', ParseIntPipe) teacherId: number): Promise<Teacher> {
+    return await this.teacherService.findById(teacherId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTeacherDto: UpdateTeacherDto) {
-    return this.teacherService.update(+id, updateTeacherDto);
+  @Get('relation/:id')
+  async getTeacherRelations(@Param('id', ParseIntPipe) teacherId: number): Promise<Teacher> {
+    return await this.teacherService.findWithRelation(teacherId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.teacherService.remove(+id);
+  @Get('all')
+  async getFindAll(): Promise<Teacher[]> {
+    return await this.teacherService.findAll();
+  }
+
+  @Patch('update/:id')
+  async getUpdate(@Param('id', ParseIntPipe) teacherId: number, @Body() updateTeacherDto: UpdateTeacherDto): Promise<string> {
+    return await this.teacherService.updateTeacher(teacherId, updateTeacherDto);
+  }
+
+  @Delete('remove/:id')
+  async getRemove(@Param('id', ParseIntPipe) teacherId: number): Promise<string> {
+    return await this.teacherService.removeTeacher(teacherId);
   }
 }

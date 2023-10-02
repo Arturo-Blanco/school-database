@@ -1,26 +1,144 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTeacherDto } from './dto/create-teacher.dto';
-import { UpdateTeacherDto } from './dto/update-teacher.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CreateTeacherAddressDto, CreateTeacherDto, UpdateTeacherDto } from './dto/teacher.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Teacher } from './entities/teacher.entity';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import { CityService } from 'src/city/city.service';
+import { City } from 'src/city/entities/city.entity';
+import { TeacherAddress } from 'src/city/entities/teacher.address.entity';
 
 @Injectable()
 export class TeacherService {
-  create(createTeacherDto: CreateTeacherDto) {
-    return 'This action adds a new teacher';
+
+  constructor(
+    @InjectRepository(Teacher)
+    private readonly teacherRepository: Repository<Teacher>,
+    @InjectRepository(TeacherAddress)
+    private readonly teacherAddressRepository: Repository<TeacherAddress>,
+    private readonly cityService: CityService
+  ) { }
+
+  async createTeacher(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
+    const { name, surname } = createTeacherDto;
+    try {
+      const newTeacher: Teacher = new Teacher(name, surname);
+      if (!newTeacher) {
+        throw new Error('Error adding new teacher.');
+      }
+      return await this.teacherRepository.save(newTeacher);
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.CONFLICT,
+        error: error.message,
+      }, HttpStatus.CONFLICT);
+    }
   }
 
-  findAll() {
-    return `This action returns all teacher`;
+  async addTeacherAddress(createTeacherAddressDto: CreateTeacherAddressDto): Promise<string> {
+    const { address, teacherId, cityId } = createTeacherAddressDto;
+    try {
+      const teacher: Teacher = await this.findById(teacherId);
+      const city: City = await this.cityService.findById(cityId);
+
+      const newTeacherAddress: TeacherAddress = new TeacherAddress(address, teacherId, city.getId());
+      if (!newTeacherAddress) {
+        throw new Error(`Error assigning the address to the teacher.`);
+      }
+      await this.teacherAddressRepository.save(newTeacherAddress);
+      return `Teacher ${teacher.getSurname()} ${teacher.getName()}, was assigned the ${address} address.`;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: error.message,
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} teacher`;
+  async findById(teacherId: number): Promise<Teacher> {
+    try {
+      const teacherCriteria: FindOneOptions = { where: { id: teacherId } };
+      const teacher: Teacher = await this.teacherRepository.findOne(teacherCriteria);
+      if (!teacher) {
+        throw new Error(`There is not teacher with id : ${teacherId}.`);
+      }
+      return teacher;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
 
-  update(id: number, updateTeacherDto: UpdateTeacherDto) {
-    return `This action updates a #${id} teacher`;
+  async findWithRelation(teacherId: number): Promise<Teacher> {
+    try {
+      const teacherCriteria: FindOneOptions = { where: { id: teacherId }, relations: ['teachers_address'] };
+      const teacher: Teacher = await this.teacherRepository.findOne(teacherCriteria);
+      if (!teacher) {
+        throw new Error(`There is not teacher with id : ${teacherId}.`);
+      }
+      return teacher;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} teacher`;
+  async findAll(): Promise<Teacher[]> {
+    try {
+      const teacherCriteria: FindManyOptions = { relations: ['teachers_address'] };
+      const teachers: Teacher[] = await this.teacherRepository.find(teacherCriteria);
+      if (!teachers) {
+        throw new Error(`Error getting teachers.`);
+      }
+      return teachers;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateTeacher(teacherId: number, updateTeacherDto: UpdateTeacherDto): Promise<string> {
+    const { name, surname } = updateTeacherDto;
+    try {
+      const teacher: Teacher = await this.findById(teacherId);
+      if (name) {
+        teacher.setName(name);
+      }
+      if (surname) {
+        teacher.setSurname(surname);
+      }
+      await this.teacherRepository.save(teacher);
+      return `Teacher ${teacher.getSurname()} ${teacher.getName()} was edited.`;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.CONFLICT,
+        message: 'Error updating student ' + error.message
+      }, HttpStatus.CONFLICT);
+    }
+  }
+
+  async removeTeacher(teacherId: number): Promise<string> {
+    try {
+      const teacher: Teacher = await this.findById(teacherId);
+      await this.teacherRepository.remove(teacher);
+      return `Teaacher with id '${teacherId} was removed.'`
+      
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.CONFLICT,
+        message: 'Error removing student '+ error.message
+      }, HttpStatus.CONFLICT);
+    }
   }
 }
