@@ -7,17 +7,17 @@ import { Student } from './entities/student.entity';
 export class StudentController {
   constructor(private readonly studentService: StudentService) { }
 
-  @Post('addStudent')
+  @Post('add')
   async getCreateStudent(@Body() createStudentDto: CreateStudentDto) {
     return await this.studentService.createStudent(createStudentDto);
   }
 
-  @Post('addStudentAddress')
+  @Post('addAddress')
   async getAddStudentAddress(@Body() studentAddressDto: StudentAddressDto) {
     return await this.studentService.addStudentAddress(studentAddressDto);
   }
 
-  @Post('addStudentClass')
+  @Post('addClass')
   async getAddStudentClass(@Body() studentClassDto: StudentClassDto) {
     return await this.studentService.addStudentClass(studentClassDto);
   }

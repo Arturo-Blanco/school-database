@@ -7,7 +7,7 @@ import { City } from './entities/city.entity';
 export class CityController {
   constructor(private readonly cityService: CityService) { }
 
-  @Post('addCity')
+  @Post('add')
   async getAddCity(@Body() createCityDto: CreateCityDto): Promise<City> {
     return await this.cityService.addCity(createCityDto);
   }

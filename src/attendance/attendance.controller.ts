@@ -7,7 +7,7 @@ import { Attendance } from './entities/attendance.entity';
 export class AttendanceController {
     constructor(private readonly attendanceService: AttendanceService) { }
 
-    @Post('addAttendance')
+    @Post('add')
     async getAddAttendance(@Body() attendanceDto: AttendanceDto): Promise<string> {
         return await this.attendanceService.addAttendance(attendanceDto);
     }

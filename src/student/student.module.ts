@@ -4,14 +4,16 @@ import { StudentController } from './student.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Student } from './entities/student.entity';
 import { StudentAddress } from 'src/city/entities/student.address.entity';
-import { CityModule } from 'src/city/city.module';
+import { StudentClass } from './entities/student.classes.entity';
+import { CityService } from 'src/city/city.service';
+import { SchoolClass } from 'src/school-class/entities/school-class.entity';
+import { City } from 'src/city/entities/city.entity';
 
 @Module({
-  imports : [
-    TypeOrmModule.forFeature([Student, StudentAddress]), 
-    CityModule
-  ],
+  imports: [
+    TypeOrmModule.forFeature([Student, StudentAddress, StudentClass, SchoolClass, City])
+  ], 
   controllers: [StudentController],
-  providers: [StudentService],
+  providers: [StudentService, CityService],
 })
-export class StudentModule {}
+export class StudentModule { }
