@@ -1,8 +1,8 @@
 import { StudentClass } from "src/student/entities/student.classes.entity";
 import { CreateDateColumn, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 
-@Entity({ name: 'asistances' })
-export class Asistance {
+@Entity({ name: 'attendances' })
+export class Attendance {
 
     @PrimaryColumn()
     studentClassClassId: number;
@@ -13,7 +13,7 @@ export class Asistance {
     @CreateDateColumn()
     date: Date;
 
-    @ManyToOne(() => StudentClass, studentClass => studentClass.asistances)
+    @ManyToOne(() => StudentClass, studentClass => studentClass.attendances)
     studentClass: StudentClass;
 
     constructor(class_id: number, student_id: number) {
