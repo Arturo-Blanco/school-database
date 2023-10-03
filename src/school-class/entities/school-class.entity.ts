@@ -12,12 +12,6 @@ export class SchoolClass {
     @Column()
     name: string;
 
-    @Column()
-    school_id: number;
-
-    @Column()
-    teacher_id: number;
-
     @ManyToOne(() => School, school => school.schoolClass)
     @JoinColumn({ name: 'school_id' })
     school: School;
@@ -38,7 +32,13 @@ export class SchoolClass {
     public getName(): string {
         return this.name;
     }
+    public getSchoolId(): number {
+        return this.school.getId();
+    }
+    public getTeacherId(): number {
+        return this.teacher.getId();
+    }
     public setName(newName: string): void {
         this.name = newName;
     }
-}
+}   

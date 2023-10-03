@@ -1,6 +1,6 @@
 import { TeacherAddress } from 'src/city/entities/teacher.address.entity';
 import { SchoolClass } from 'src/school-class/entities/school-class.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 
 @Entity({ name: "teachers" })
 export class Teacher {
@@ -14,10 +14,11 @@ export class Teacher {
     @Column()
     surname: string;
 
-    @OneToMany(() => TeacherAddress, teacherAddress => teacherAddress.teacher)
+    @OneToMany(() => TeacherAddress, teacherAddress => teacherAddress.teacher, { cascade: true, onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'teacher_id' })
     teacherAddress: TeacherAddress[];
 
-    @OneToMany(() => SchoolClass, schoolClass => schoolClass.teacher)
+    @OneToMany(() => SchoolClass, schoolClass => schoolClass.teacher, { cascade: true, onDelete: 'CASCADE' })
     schoolClass: SchoolClass[];
 
     constructor(name: string, surname: string) {

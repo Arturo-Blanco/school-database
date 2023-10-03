@@ -22,7 +22,7 @@ export class StudentController {
     return await this.studentService.addStudentClass(studentClassDto);
   }
 
-  @Get(':id')
+  @Get('search/:id')
   async getStudentById(@Param('id', ParseIntPipe) studentId: number): Promise<Student> {
     return await this.studentService.findById(studentId);
   }

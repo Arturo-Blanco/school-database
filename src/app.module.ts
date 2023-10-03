@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { CityModule } from './city/city.module';
 import { SchoolClassModule } from './school-class/school-class.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SchoolModule } from './school/school.module';
+import { AttendanceModule } from './attendance/attendance.module';
 
 @Module({
   imports: [
@@ -24,8 +23,9 @@ import { SchoolModule } from './school/school.module';
     TeacherModule, 
     CityModule, 
     SchoolClassModule, 
-    SchoolModule],
-  controllers: [AppController],
-  providers: [AppService],
+    SchoolModule, 
+    AttendanceModule],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

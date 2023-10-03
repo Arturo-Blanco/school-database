@@ -11,3 +11,7 @@ export class UpdateTeacherDto {
     readonly name: string;
     readonly surname: string;
 }
+export class UpdateTeacherAddressDto {
+    readonly address: string;
+    readonly cityId: number;
+}

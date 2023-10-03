@@ -1,8 +1,8 @@
 import { School } from './../school/entities/school.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateSchoolClassDto } from './dto/school-class.dto';
+import { CreateSchoolClassDto, UpdateSchoolClassDto } from './dto/school-class.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { SchoolClass } from './entities/school-class.entity';
 import { SchoolService } from 'src/school/school.service';
 import { TeacherService } from 'src/teacher/teacher.service';
@@ -28,8 +28,8 @@ export class SchoolClassService {
       if (!newSchoolClass) {
         throw new Error('Error adding new class.')
       }
-      newSchoolClass.school_id = school.getId();
-      newSchoolClass.teacher_id = teacher.getId();
+      newSchoolClass.school = school;
+      newSchoolClass.teacher = teacher;
       await this.schoolClassRepository.save(newSchoolClass);
       return `Class ${name} was added with teacher ${teacher.getSurname()} on school ${school.getName()}.`;
 
@@ -41,19 +41,92 @@ export class SchoolClassService {
     }
   }
 
-  findAll() {
-    return `This action returns all schoolClass`;
+  async findById(schoolClassId: number): Promise<SchoolClass> {
+    try {
+      const classCritera: FindOneOptions = { where: { id: schoolClassId } };
+      const schoolClass: SchoolClass = await this.schoolClassRepository.findOne(classCritera);
+      if (!schoolClass) {
+        throw new Error(`There is no class with id : ${schoolClassId}.`);
+      }
+      return schoolClass;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} schoolClass`;
+  async findWitRelations(schoolClassId: number): Promise<SchoolClass> {
+    try {
+      const classCritera: FindOneOptions = { where: { id: schoolClassId }, relations: ['teacher', 'school'] };
+      const schoolClass: SchoolClass = await this.schoolClassRepository.findOne(classCritera);
+      if (!schoolClass) {
+        throw new Error(`There is no class with id : ${schoolClassId}.`);
+      }
+      return schoolClass;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+  
+  async findAll(): Promise<SchoolClass[]> {
+    try {
+      const classCritera: FindManyOptions = { relations: ['teacher', 'school'] };
+      const schoolClasses: SchoolClass[] = await this.schoolClassRepository.find(classCritera);
+      if (!schoolClasses) {
+        throw new Error('There is no classes.')
+      }
+      return schoolClasses;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
 
-  update(id: number, updateSchoolClassDto) {
-    return `This action updates a #${id} schoolClass`;
+  async updateSchoolClass(schoolClassId: number, updateSchoolClassDto: UpdateSchoolClassDto): Promise<string> {
+    const { name, schoolId, teacherId } = updateSchoolClassDto;
+    try {
+      const schoolClass: SchoolClass = await this.findById(schoolClassId);
+      if (name) {
+        schoolClass.setName(name);
+      }
+      if (schoolId) {
+        //schoolClass.setSchoolId(schoolId);
+      }
+      if (teacherId) {
+        //schoolClass.setTeacherId(teacherId);
+      }
+      await this.schoolClassRepository.save(schoolClass);
+      return `Class with id ${schoolClassId} was edited.`
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} schoolClass`;
+  async removeSchoolClass(schoolClassId: number): Promise<string> {
+    try {
+      const schoolClass: SchoolClass = await this.findById(schoolClassId);
+      await this.schoolClassRepository.remove(schoolClass);
+      return `Class with id ${schoolClassId} was remove.`
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
 }

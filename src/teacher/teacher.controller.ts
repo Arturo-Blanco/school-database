@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { TeacherService } from './teacher.service';
-import { CreateTeacherAddressDto, CreateTeacherDto, UpdateTeacherDto } from './dto/teacher.dto';
+import { CreateTeacherAddressDto, CreateTeacherDto, UpdateTeacherAddressDto, UpdateTeacherDto } from './dto/teacher.dto';
 import { Teacher } from './entities/teacher.entity';
 
 @Controller('teacher')
@@ -17,7 +17,7 @@ export class TeacherController {
     return await this.teacherService.addTeacherAddress(createTeacherAddressDto);
   }
 
-  @Get(':id')
+  @Get('search/:id')
   async getTeacherById(@Param('id', ParseIntPipe) teacherId: number): Promise<Teacher> {
     return await this.teacherService.findById(teacherId);
   }
@@ -35,6 +35,11 @@ export class TeacherController {
   @Patch('update/:id')
   async getUpdate(@Param('id', ParseIntPipe) teacherId: number, @Body() updateTeacherDto: UpdateTeacherDto): Promise<string> {
     return await this.teacherService.updateTeacher(teacherId, updateTeacherDto);
+  }
+
+  @Patch('updateAddress/:id')
+  async getUpdateAddress(@Param('id', ParseIntPipe) teacherId: number, @Body() updateTeacherAddress: UpdateTeacherAddressDto): Promise<string> {
+    return await this.teacherService.updateTeacherAddress(teacherId, updateTeacherAddress);
   }
 
   @Delete('remove/:id')

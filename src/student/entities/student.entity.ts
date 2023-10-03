@@ -17,10 +17,10 @@ export class Student {
     @Column()
     birth_date: Date;
 
-    @OneToMany(() => StudentAddress, studentAddress => studentAddress.student)
+    @OneToMany(() => StudentAddress, studentAddress => studentAddress.student, { cascade: true, onDelete: 'CASCADE' })
     studentAddress: StudentAddress[];
 
-    @OneToMany(() => StudentClass, studentClass => studentClass.student)
+    @OneToMany(() => StudentClass, studentClass => studentClass.student, { cascade: true, onDelete: 'CASCADE' })
     studentClass: StudentClass[];
 
     constructor(name: string, surname: string, birth_date: Date) {

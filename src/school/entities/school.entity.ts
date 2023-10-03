@@ -14,9 +14,6 @@ export class School {
     @Column()
     address: string;
 
-    @Column()
-    city_id: number;
-
     @ManyToOne(() => City, city => city.schools)
     @JoinColumn({ name: 'city_id' })
     city: City;
@@ -38,15 +35,12 @@ export class School {
         return this.address;
     }
     public getCityId(): number {
-        return this.city_id;
+        return this.city.getId();
     }
     public setName(newName: string): void {
         this.name = newName;
     }
     public setAddress(newAddress: string): void {
         this.address = newAddress;
-    }
-    public setCityId(newCityId: number): void {
-        this.city_id = newCityId;
     }
 }

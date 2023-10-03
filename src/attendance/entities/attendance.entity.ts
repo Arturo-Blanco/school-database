@@ -3,12 +3,11 @@ import { CreateDateColumn, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 
 @Entity({ name: 'attendances' })
 export class Attendance {
+    @PrimaryColumn({ name: 'studentClassStudentId' })
+    student_id: number;
 
-    @PrimaryColumn()
-    studentClassClassId: number;
-
-    @PrimaryColumn()
-    studentClassStudentId: number;
+    @PrimaryColumn({ name: 'studentClassClassId' })
+    class_id: number
 
     @CreateDateColumn()
     date: Date;
@@ -16,20 +15,20 @@ export class Attendance {
     @ManyToOne(() => StudentClass, studentClass => studentClass.attendances)
     studentClass: StudentClass;
 
-    constructor(class_id: number, student_id: number) {
-        this.studentClassClassId = class_id;
-        this.studentClassStudentId = student_id;
+    constructor(student_id: number, class_id: number) {
+        this.student_id = student_id;
+        this.class_id = class_id;
     }
     public getClassId(): number {
-        return this.studentClassClassId;
+        return this.class_id;
     }
     public getStudentId(): number {
-        return this.studentClassStudentId;
+        return this.student_id;
     }
     public setClassId(newClassId: number): void {
-        this.studentClassClassId = newClassId;
+        this.class_id = newClassId;
     }
     public setStudentId(newStudentId: number): void {
-        this.studentClassStudentId= newStudentId;
+        this.student_id = newStudentId;
     }
 }

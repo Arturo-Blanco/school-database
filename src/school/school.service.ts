@@ -39,25 +39,25 @@ export class SchoolService {
 
     async findById(schoolId: number): Promise<School> {
         try {
-            const schoolCriteria: FindOneOptions = { where: { id: schoolId }, relations: ['cities'] };
+            const schoolCriteria: FindOneOptions = { where: { id: schoolId }, relations: ['city'] };
             const school: School = await this.schoolRepository.findOne(schoolCriteria);
 
             if (!school) {
-                throw new Error(`There is not school with id : ${schoolId}.`);
+                throw new Error(`There is no school with id : ${schoolId}.`);
             }
             return school;
 
         } catch (error) {
             throw new HttpException({
                 status: HttpStatus.BAD_REQUEST,
-                message: 'Error gettin school ' + error.message
+                message: 'Error getting school. ' + error.message
             }, HttpStatus.BAD_REQUEST);
         }
     }
 
     async findAll(): Promise<School[]> {
         try {
-            const schoolCriteria: FindManyOptions = { relations: ['cities'] };
+            const schoolCriteria: FindManyOptions = { relations: ['city'] };
             const schools: School[] = await this.schoolRepository.find(schoolCriteria);
 
             if (!schools) {
@@ -84,7 +84,11 @@ export class SchoolService {
                 school.setAddress(address);
             }
             if (cityId) {
-                school.setCityId(cityId);
+                const city: City = await this.cityRepository.findOne({ where: { id: cityId } });
+                if (!city) {
+                    throw new Error(`There is not city with id : ${cityId}.`);
+                }
+                school.city = city;
             }
             await this.schoolRepository.save(school);
             return `School with id ${schoolId} was edited.`;
@@ -92,7 +96,7 @@ export class SchoolService {
         } catch (error) {
             throw new HttpException({
                 status: HttpStatus.BAD_REQUEST,
-                message: 'Error updating school ' + error.message
+                message: error.message
             }, HttpStatus.BAD_REQUEST);
         }
     }
@@ -105,7 +109,7 @@ export class SchoolService {
         } catch (error) {
             throw new HttpException({
                 status: HttpStatus.CONFLICT,
-                message: 'Error removing school ' + error.message
+                message: error.message
             }, HttpStatus.CONFLICT);
         }
     }

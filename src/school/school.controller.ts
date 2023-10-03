@@ -12,7 +12,7 @@ export class SchoolController {
         return await this.schoolServie.createSchool(createSchoolDto);
     }
 
-    @Get(':id')
+    @Get('search/:id')
     async getFindById(@Param('id', ParseIntPipe) schoolId: number): Promise<School> {
         return await this.schoolServie.findById(schoolId);
     }

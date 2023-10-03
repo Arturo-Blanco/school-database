@@ -13,6 +13,5 @@ import { StudentAddress } from './entities/student.address.entity';
   ],
   controllers: [CityController],
   providers: [CityService],
-  exports : [CityService]
 })
 export class CityModule {}

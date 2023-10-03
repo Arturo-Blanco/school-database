@@ -14,5 +14,6 @@ import { City } from 'src/city/entities/city.entity';
   ],
   controllers: [TeacherController],
   providers: [TeacherService, CityService],
+  exports : [TeacherService]
 })
 export class TeacherModule {}

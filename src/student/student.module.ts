@@ -8,12 +8,14 @@ import { StudentClass } from './entities/student.classes.entity';
 import { CityService } from 'src/city/city.service';
 import { SchoolClass } from 'src/school-class/entities/school-class.entity';
 import { City } from 'src/city/entities/city.entity';
+import { School } from 'src/school/entities/school.entity';
+import { SchoolService } from 'src/school/school.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Student, StudentAddress, StudentClass, SchoolClass, City])
+    TypeOrmModule.forFeature([Student, StudentAddress, StudentClass, SchoolClass, City, School])
   ], 
   controllers: [StudentController],
-  providers: [StudentService, CityService],
+  providers: [StudentService, CityService, SchoolService],
 })
 export class StudentModule { }

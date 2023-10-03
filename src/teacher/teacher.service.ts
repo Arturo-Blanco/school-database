@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateTeacherAddressDto, CreateTeacherDto, UpdateTeacherDto } from './dto/teacher.dto';
+import { CreateTeacherAddressDto, CreateTeacherDto, UpdateTeacherAddressDto, UpdateTeacherDto } from './dto/teacher.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Teacher } from './entities/teacher.entity';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
@@ -41,7 +41,7 @@ export class TeacherService {
       const teacher: Teacher = await this.findById(teacherId);
       const city: City = await this.cityService.findById(cityId);
 
-      const newTeacherAddress: TeacherAddress = new TeacherAddress(address, teacherId, city.getId());
+      const newTeacherAddress: TeacherAddress = new TeacherAddress(address, teacher.getId(), city.getId());
       if (!newTeacherAddress) {
         throw new Error(`Error assigning the address to the teacher.`);
       }
@@ -61,7 +61,7 @@ export class TeacherService {
       const teacherCriteria: FindOneOptions = { where: { id: teacherId } };
       const teacher: Teacher = await this.teacherRepository.findOne(teacherCriteria);
       if (!teacher) {
-        throw new Error(`There is not teacher with id : ${teacherId}.`);
+        throw new Error(`There is no teacher with id : ${teacherId}.`);
       }
       return teacher;
 
@@ -75,7 +75,7 @@ export class TeacherService {
 
   async findWithRelation(teacherId: number): Promise<Teacher> {
     try {
-      const teacherCriteria: FindOneOptions = { where: { id: teacherId }, relations: ['teachers_address'] };
+      const teacherCriteria: FindOneOptions = { where: { id: teacherId }, relations: ['teacherAddress'] };
       const teacher: Teacher = await this.teacherRepository.findOne(teacherCriteria);
       if (!teacher) {
         throw new Error(`There is not teacher with id : ${teacherId}.`);
@@ -92,7 +92,7 @@ export class TeacherService {
 
   async findAll(): Promise<Teacher[]> {
     try {
-      const teacherCriteria: FindManyOptions = { relations: ['teachers_address'] };
+      const teacherCriteria: FindManyOptions = { relations: ['teacherAddress']};
       const teachers: Teacher[] = await this.teacherRepository.find(teacherCriteria);
       if (!teachers) {
         throw new Error(`Error getting teachers.`);
@@ -128,16 +128,46 @@ export class TeacherService {
     }
   }
 
+  async updateTeacherAddress(teacher_Id: number, updateTeacherAddress: UpdateTeacherAddressDto): Promise<string> {
+    const { address, cityId } = updateTeacherAddress;
+    try {
+      const teacher: Teacher = await this.findById(teacher_Id);
+      const city: City = await this.cityService.findById(cityId);
+
+      const teacherAddresCriteria : FindOneOptions = {where : {teacher_id : teacher_Id}};
+      const teacherAddress : TeacherAddress = await this.teacherAddressRepository.findOne(teacherAddresCriteria);
+
+      if(!teacherAddress) {
+        throw new Error('The teacher does not have a valid address');
+      }
+
+      if(address) {
+        teacherAddress.setAddress(address);
+      }
+      if(cityId) {
+        teacherAddress.setCityId(city.getId());
+      }
+      await this.teacherAddressRepository.save(teacherAddress);
+      return `Teacher ${teacher.getSurname()} ${teacher.getName()} address was  edited.`;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: error.message,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async removeTeacher(teacherId: number): Promise<string> {
     try {
       const teacher: Teacher = await this.findById(teacherId);
       await this.teacherRepository.remove(teacher);
-      return `Teaacher with id '${teacherId} was removed.'`
-      
+      return `Teaacher with id ${teacherId} was removed.`
+
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.CONFLICT,
-        message: 'Error removing student '+ error.message
+        message: 'Error removing teacher. ' + error.message
       }, HttpStatus.CONFLICT);
     }
   }

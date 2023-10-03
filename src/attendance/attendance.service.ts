@@ -19,6 +19,7 @@ export class AttendanceService {
         try {
             const studentClassCriteria: FindOneOptions = { where: { student_id: studentId, class_id: classId } };
             const studentClass: StudentClass = await this.studentClassRepository.findOne(studentClassCriteria);
+    
             if (!studentClass) {
                 throw new Error(`The student is not assigned the class.`);
             }
@@ -26,6 +27,7 @@ export class AttendanceService {
             if (!newAttendance) {
                 throw new Error(`Error adding new attendance.`);
             }
+    
             await this.attendanceRepository.save(newAttendance);
             return `Student with id ${studentId} had present on class ${classId}.`;
 
@@ -39,9 +41,8 @@ export class AttendanceService {
 
     async findAll(): Promise<Attendance[]> {
         try {
-            const attendancesCriteria: FindManyOptions = { relations: ['students_classes'] };
-            const attendances: Attendance[] = await this.attendanceRepository.find(attendancesCriteria);
-            if (attendances) {
+            const attendances: Attendance[] = await this.attendanceRepository.find();
+            if (!attendances) {
                 throw new Error('Error getting attendances.');
             }
             return attendances;

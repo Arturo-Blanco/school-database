@@ -47,9 +47,8 @@ export class StudentService {
       const classCriteria: FindOneOptions = { where: { id: classId } };
       const schoolClass = await this.schoolClassRepository.findOne(classCriteria);
       if (!schoolClass) {
-        throw new Error(`There is not class with id : ${classId}.`);
+        throw new Error(`There is no class with id : ${classId}.`);
       }
-
       const student: Student = await this.findById(studentId);
 
       const newStudentClass: StudentClass = new StudentClass(studentId, classId);
@@ -90,7 +89,7 @@ export class StudentService {
 
   async findAll(): Promise<Student[]> {
     try {
-      const studentCriteria: FindManyOptions = { relations: ['students_address, students_classes'] };
+      const studentCriteria: FindManyOptions = { relations: ['studentAddress', 'studentClass'] };
       const students: Student[] = await this.studentRepository.find(studentCriteria);
       if (!students) {
         throw new Error(`Error getting students.`);
@@ -124,7 +123,7 @@ export class StudentService {
 
   async findWithRelation(studentId: number): Promise<Student> {
     try {
-      const studentCriteria: FindOneOptions = { where: { id: studentId }, relations: ['students_address, students_classes'] };
+      const studentCriteria: FindOneOptions = { where: { id: studentId }, relations: ['studentAddress', 'studentClass'] };
       const student: Student = await this.studentRepository.findOne(studentCriteria);
       if (!student) {
         throw new Error(`There is not student with id : ${studentId}.`);

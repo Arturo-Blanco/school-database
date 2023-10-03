@@ -12,7 +12,7 @@ export class CityController {
     return await this.cityService.createCity(createCityDto);
   }
 
-  @Get(':id')
+  @Get('search/:id')
   async getCityById(@Param('id', ParseIntPipe) cityId: number): Promise<City> {
     return await this.cityService.findById(cityId);
   }
