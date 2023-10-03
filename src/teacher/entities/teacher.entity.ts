@@ -14,11 +14,11 @@ export class Teacher {
     @Column()
     surname: string;
 
-    @OneToMany(() => TeacherAddress, teacherAddress => teacherAddress.teacher, { cascade: true, onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'teacher_id' })
+    @OneToMany(() => TeacherAddress, teacherAddress => teacherAddress.teacher)
+    @JoinColumn()
     teacherAddress: TeacherAddress[];
 
-    @OneToMany(() => SchoolClass, schoolClass => schoolClass.teacher, { cascade: true, onDelete: 'CASCADE' })
+    @OneToMany(() => SchoolClass, schoolClass => schoolClass.teacher)
     schoolClass: SchoolClass[];
 
     constructor(name: string, surname: string) {

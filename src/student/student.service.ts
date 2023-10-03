@@ -166,7 +166,7 @@ export class StudentService {
     try {
       const student: Student = await this.findById(studentId);
       await this.studentRepository.remove(student);
-      return `Student with id '${studentId} was removed.'`
+      return `Student with id ${studentId} was removed.`
       
     } catch (error) {
       throw new HttpException({

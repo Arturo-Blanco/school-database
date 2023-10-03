@@ -100,10 +100,12 @@ export class SchoolClassService {
         schoolClass.setName(name);
       }
       if (schoolId) {
-        //schoolClass.setSchoolId(schoolId);
+        const school: School = await this.schoolService.findById(schoolId);
+        schoolClass.school = school;
       }
       if (teacherId) {
-        //schoolClass.setTeacherId(teacherId);
+        const teacher: Teacher = await this.teacherService.findById(teacherId);
+        schoolClass.teacher = teacher;
       }
       await this.schoolClassRepository.save(schoolClass);
       return `Class with id ${schoolClassId} was edited.`

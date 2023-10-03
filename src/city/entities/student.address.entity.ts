@@ -11,18 +11,18 @@ export class StudentAddress {
     @Column()
     address: string;
 
-    @Column()
+    @Column({ name: 'studentId' })
     student_id: number;
 
-    @Column()
+    @Column({ name: 'cityId' })
     city_id: number;
 
     @ManyToOne(() => Student, student => student.studentAddress)
-    @JoinColumn({ name: 'student_id' })
+    @JoinColumn()
     student: Student;
 
     @ManyToOne(() => City, city => city.studentAddress)
-    @JoinColumn({ name: 'city_id' })
+    @JoinColumn()
     city: City;
 
     constructor(address: string, student_id: number, city_id: number) {

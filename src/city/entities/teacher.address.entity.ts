@@ -6,23 +6,23 @@ import { City } from './city.entity';
 export class TeacherAddress {
 
     @PrimaryGeneratedColumn()
-    teacher_address_id : number;
+    teacher_address_id: number;
 
     @Column()
     address: string;
 
-    @Column()
+    @Column({ name: 'teacherId' })
     teacher_id: number;
 
-    @Column()
+    @Column({ name: 'cityId' })
     city_id: number;
 
     @ManyToOne(() => Teacher, teacher => teacher.teacherAddress)
-    @JoinColumn({ name: 'teacher_id' })
+    @JoinColumn()
     teacher: Teacher;
 
     @ManyToOne(() => City, city => city.teacherAddress)
-    @JoinColumn({ name: 'city_id' })
+    @JoinColumn()
     city: City;
 
     constructor(address: string, teacher_id: number, city_id: number) {

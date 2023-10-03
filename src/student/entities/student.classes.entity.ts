@@ -6,18 +6,18 @@ import { Attendance } from "src/attendance/entities/attendance.entity";
 @Entity({ name: 'students_classes' })
 export class StudentClass {
 
-    @PrimaryColumn()
+    @PrimaryColumn({ name: 'studentId' })
     student_id: number;
 
-    @PrimaryColumn()
+    @PrimaryColumn({ name: 'schoolClassId' })
     class_id: number;
 
     @ManyToOne(() => Student, student => student.studentClass)
-    @JoinColumn({ name: 'student_id' })
+    @JoinColumn()
     student: Student;
 
     @ManyToOne(() => SchoolClass, schoolClass => schoolClass.studentClass)
-    @JoinColumn({ name: 'class_id' })
+    @JoinColumn()
     schoolClass: SchoolClass;
 
     @OneToMany(() => Attendance, attendance => attendance.studentClass)
