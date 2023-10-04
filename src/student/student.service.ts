@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateStudentDto, StudentAddressDto, StudentClassDto, UpdateStudentDto } from './dto/student.dto';
+import { CreateStudentDto, StudentAddressDto, StudentClassDto, UpdateStudentDto, UpdateStudentAddressDto } from './dto/student.dto';
 import { Student } from './entities/student.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
@@ -22,6 +22,7 @@ export class StudentService {
     @InjectRepository(StudentAddress)
     private readonly studentAddressRepository: Repository<StudentAddress>,
     private readonly cityService: CityService
+    
   ) { }
 
   async createStudent(createStudentDto: CreateStudentDto): Promise<Student> {
@@ -50,6 +51,11 @@ export class StudentService {
         throw new Error(`There is no class with id : ${classId}.`);
       }
       const student: Student = await this.findById(studentId);
+      const studentHasClass : StudentClass = await this.studentClassRepository.findOne({ where : {student_id : studentId, class_id : classId}});
+
+      if(studentHasClass) {
+        return `Student ${student.getName()} is already registered in class ${classId}.`
+      }
 
       const newStudentClass: StudentClass = new StudentClass(studentId, classId);
       if (!newStudentClass) {
@@ -72,6 +78,10 @@ export class StudentService {
       const student: Student = await this.findById(studentId);
       const city: City = await this.cityService.findById(cityId);
 
+      const studentHasAddress : StudentAddress = await this.studentAddressRepository.findOne({where : {address : address, student_id: studentId, city_id: cityId}});
+      if(studentHasAddress) {
+        return `Student$ {student.getName()} has already been asigned addres ${address} in city ${city.getName()}.`
+      }
       const newStudentAddress: StudentAddress = new StudentAddress(address, studentId, city.getId());
       if (!newStudentAddress) {
         throw new Error(`Error assigning the address to the student.`);

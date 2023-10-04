@@ -4,8 +4,8 @@ export class CreateStudentDto {
     readonly birthDate: Date;
 }
 export class StudentClassDto {
-    readonly classId: number;
     readonly studentId: number;
+    readonly classId: number;
 }
 export class StudentAddressDto {
     readonly address: string;
@@ -19,10 +19,8 @@ export class UpdateStudentDto {
 }
 export class UpdateStudentClassDto {
     readonly classId: number;
-    readonly studentId: number;
 }
 export class UpdateStudentAddressDto {
     readonly address: string;
-    readonly studentId: number;
     readonly cityId: number;
 }

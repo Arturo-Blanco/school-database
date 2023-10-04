@@ -1,8 +1,32 @@
 import { StudentClass } from "src/student/entities/student.classes.entity";
-import { CreateDateColumn, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { CreateDateColumn, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
+// @Entity({ name: 'attendances' })
+// export class Attendance {
+//     @PrimaryGeneratedColumn()
+//     student_attendance_id : number;
+
+//     @CreateDateColumn()
+//     date: Date;
+
+//     @ManyToOne(() => StudentClass, studentClass => studentClass.attendances)
+//     studentClass: StudentClass;
+
+//     constructor(studentClass : StudentClass) {
+//         this.studentClass = studentClass;
+//     }
+//     public getClassId(): StudentClass {
+//         return this.studentClass;
+//     }
+
+//     public setClassId(newClassId: StudentClass): void {
+//         this.studentClass = newClassId;
+//     }
+// }
 @Entity({ name: 'attendances' })
 export class Attendance {
+
+
     @PrimaryColumn({ name: 'studentClassStudentId' })
     student_id: number;
 
@@ -15,20 +39,16 @@ export class Attendance {
     @ManyToOne(() => StudentClass, studentClass => studentClass.attendances)
     studentClass: StudentClass;
 
-    constructor(student_id: number, class_id: number) {
-        this.student_id = student_id;
-        this.class_id = class_id;
+    constructor(studentClass: StudentClass) {
+        this.studentClass = studentClass;
     }
-    public getClassId(): number {
-        return this.class_id;
+    public getClassId(): StudentClass {
+        return this.studentClass;
     }
-    public getStudentId(): number {
-        return this.student_id;
+    public setClassId(newClassId: StudentClass): void {
+        this.studentClass = newClassId;
     }
-    public setClassId(newClassId: number): void {
-        this.class_id = newClassId;
-    }
-    public setStudentId(newStudentId: number): void {
-        this.student_id = newStudentId;
+    public getDate(): Date {
+        return this.date;
     }
 }

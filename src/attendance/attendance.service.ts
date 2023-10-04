@@ -19,15 +19,19 @@ export class AttendanceService {
         try {
             const studentClassCriteria: FindOneOptions = { where: { student_id: studentId, class_id: classId } };
             const studentClass: StudentClass = await this.studentClassRepository.findOne(studentClassCriteria);
-    
             if (!studentClass) {
                 throw new Error(`The student is not assigned the class.`);
             }
-            const newAttendance: Attendance = new Attendance(studentId, classId);
+            const hasAttendance: Attendance = await this.attendanceRepository.findOne({ where: { student_id: studentId, class_id: classId } });
+            if (hasAttendance) {
+                return `Student with id ${studentId} is already present in class ${classId}.`;
+            }
+            
+            const newAttendance: Attendance = new Attendance(studentClass);
             if (!newAttendance) {
                 throw new Error(`Error adding new attendance.`);
             }
-    
+
             await this.attendanceRepository.save(newAttendance);
             return `Student with id ${studentId} had present on class ${classId}.`;
 
@@ -58,19 +62,14 @@ export class AttendanceService {
     async updateAttendance(student_id: number, class_id: number, updateAttendance: AttendanceDto): Promise<string> {
         const { studentId, classId } = updateAttendance;
         try {
-            const attendanceCriteria: FindOneOptions = { where: { studentClassClassId: class_id, studentClassStudentId: student_id } }
+            const attendanceCriteria: FindOneOptions = { where: { student_id: student_id, class_id: class_id } }
             const attendance: Attendance = await this.attendanceRepository.findOne(attendanceCriteria);
             if (!attendance) {
-                throw new Error(`Student with id ${studentId} do not have attendance in class ${classId}.`);
+                throw new Error(`Student with id ${student_id} do not have attendance in class ${class_id}.`);
             }
-
-            if (studentId) {
-                attendance.setStudentId(studentId);
-            }
-            if (classId) {
-                attendance.setClassId(classId);
-            }
-            await this.attendanceRepository.save(attendance);
+            await this.removeAttendance(student_id,class_id);
+            await this.createAttendance(updateAttendance);
+            
             return `Attendance was edited.`;
 
         } catch (error) {
@@ -83,18 +82,18 @@ export class AttendanceService {
 
     async removeAttendance(studentId: number, classId: number): Promise<string> {
         try {
-            const attendanceCriteria: FindOneOptions = { where: { studentClassClassId: classId, studentClassStudentId: studentId } }
+            const attendanceCriteria: FindOneOptions = { where: { student_id: studentId, class_id: classId } }
             const attendance: Attendance = await this.attendanceRepository.findOne(attendanceCriteria);
             if (!attendance) {
                 throw new Error(`Student with id ${studentId} do not have attendance in class ${classId}.`);
             }
             await this.attendanceRepository.remove(attendance);
-            return 'Attendance of student with id ${studentId} was removed from the class ${classId}.';
+            return `Attendance of student with id ${studentId} was removed from the class ${classId}.`;
 
         } catch (error) {
             throw new HttpException({
                 status: HttpStatus.CONFLICT,
-                error: 'Error removing attendance ' + error.message,
+                error: 'Error removing attendance. ' + error.message,
             }, HttpStatus.CONFLICT);
         }
     }
