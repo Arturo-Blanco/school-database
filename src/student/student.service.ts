@@ -22,7 +22,7 @@ export class StudentService {
     @InjectRepository(StudentAddress)
     private readonly studentAddressRepository: Repository<StudentAddress>,
     private readonly cityService: CityService
-    
+
   ) { }
 
   async createStudent(createStudentDto: CreateStudentDto): Promise<Student> {
@@ -51,9 +51,9 @@ export class StudentService {
         throw new Error(`There is no class with id : ${classId}.`);
       }
       const student: Student = await this.findById(studentId);
-      const studentHasClass : StudentClass = await this.studentClassRepository.findOne({ where : {student_id : studentId, class_id : classId}});
+      const studentHasClass: StudentClass = await this.studentClassRepository.findOne({ where: { student_id: studentId, class_id: classId } });
 
-      if(studentHasClass) {
+      if (studentHasClass) {
         return `Student ${student.getName()} is already registered in class ${classId}.`
       }
 
@@ -78,8 +78,8 @@ export class StudentService {
       const student: Student = await this.findById(studentId);
       const city: City = await this.cityService.findById(cityId);
 
-      const studentHasAddress : StudentAddress = await this.studentAddressRepository.findOne({where : {address : address, student_id: studentId, city_id: cityId}});
-      if(studentHasAddress) {
+      const studentHasAddress: StudentAddress = await this.studentAddressRepository.findOne({ where: { address: address, student_id: studentId, city_id: cityId } });
+      if (studentHasAddress) {
         return `Student$ {student.getName()} has already been asigned addres ${address} in city ${city.getName()}.`
       }
       const newStudentAddress: StudentAddress = new StudentAddress(address, studentId, city.getId());
@@ -131,6 +131,72 @@ export class StudentService {
     }
   }
 
+  async findAddress(student_id: number): Promise<StudentAddress | string> {
+    try {
+      const student: Student = await this.findById(student_id);
+      const address: StudentAddress = await this.studentAddressRepository.findOne({ where: { student_id: student_id } });
+      if (!address) {
+        return `Student ${student.getName()} do not have address yet.`
+      }
+      return address;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Error getting address. ' + error.message,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findAllAddress(): Promise<StudentAddress[] | string> {
+    try {
+      const addresses: StudentAddress[] = await this.studentAddressRepository.find();
+      if (!addresses) {
+        throw new Error('There are no addresses in the database.')
+      }
+      return addresses;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Error getting address. ' + error.message,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findStudentClass(student_id: number): Promise<StudentClass | string> {
+    try {
+      const student: Student = await this.findById(student_id);
+      const studentClass: StudentClass = await this.studentClassRepository.findOne({ where: { student_id: student_id } });
+      if (!studentClass) {
+        return `Student ${student.getName()} do not have class yet.`
+      }
+      return studentClass;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Error getting address. ' + error.message,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findAllStudentClass(): Promise<StudentClass[] | string> {
+    try {
+      const studentClasses: StudentClass[] = await this.studentClassRepository.find();
+      if (!studentClasses) {
+        throw new Error('There are no classes in the database.')
+      }
+      return studentClasses;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Error getting address. ' + error.message,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async findWithRelation(studentId: number): Promise<Student> {
     try {
       const studentCriteria: FindOneOptions = { where: { id: studentId }, relations: ['studentAddress', 'studentClass'] };
@@ -177,11 +243,11 @@ export class StudentService {
       const student: Student = await this.findById(studentId);
       await this.studentRepository.remove(student);
       return `Student with id ${studentId} was removed.`
-      
+
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.CONFLICT,
-        message: 'Error removing student '+ error.message
+        message: 'Error removing student ' + error.message
       }, HttpStatus.CONFLICT);
     }
   }

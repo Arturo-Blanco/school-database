@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from 
 import { StudentService } from './student.service';
 import { CreateStudentDto, StudentAddressDto, StudentClassDto, UpdateStudentDto } from './dto/student.dto';
 import { Student } from './entities/student.entity';
+import { StudentClass } from './entities/student.classes.entity';
+import { StudentAddress } from 'src/city/entities/student.address.entity';
 
 @Controller('student')
 export class StudentController {
@@ -35,6 +37,26 @@ export class StudentController {
   @Get('all')
   async getFindAll(): Promise<Student[]> {
     return await this.studentService.findAll();
+  }
+
+  @Get('studentClass/:studentId')
+  async getFindStudentClass(@Param('studentId', ParseIntPipe) studentId: number): Promise<StudentClass | string> {
+    return await this.studentService.findStudentClass(studentId);
+  }
+
+  @Get('studentAddress/:studentId')
+  async getFindStudentAddress(@Param('studentId', ParseIntPipe) studentId: number): Promise<StudentAddress | string> {
+    return await this.studentService.findAddress(studentId);
+  }
+
+  @Get('allAddress')
+  async getFindAllAddress(): Promise<StudentAddress[] | string> {
+    return await this.studentService.findAllAddress();
+  }
+  
+  @Get('allClass')
+  async getFindAllClass(): Promise<StudentClass[] | string> {
+    return await this.studentService.findAllStudentClass();
   }
 
   @Patch('update/:id')

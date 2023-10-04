@@ -92,7 +92,7 @@ export class TeacherService {
 
   async findAll(): Promise<Teacher[]> {
     try {
-      const teacherCriteria: FindManyOptions = { relations: ['teacherAddress']};
+      const teacherCriteria: FindManyOptions = { relations: ['teacherAddress'] };
       const teachers: Teacher[] = await this.teacherRepository.find(teacherCriteria);
       if (!teachers) {
         throw new Error(`Error getting teachers.`);
@@ -103,6 +103,39 @@ export class TeacherService {
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
         message: error.message
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findAddress(teacher_id: number): Promise<TeacherAddress | string> {
+    try {
+      const teacher: Teacher = await this.findById(teacher_id);
+      const address: TeacherAddress = await this.teacherAddressRepository.findOne({ where: { teacher_id: teacher_id } });
+      if (!address) {
+        return `Teacher ${teacher.getName()} do not have address yet.`
+      }
+      return address;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Error getting address. ' + error.message,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findAllAddress(): Promise<TeacherAddress[] | string> {
+    try {
+      const addresses: TeacherAddress[] = await this.teacherAddressRepository.find();
+      if (!addresses) {
+        throw new Error('There are no addresses in the database.')
+      }
+      return addresses;
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Error getting address. ' + error.message,
       }, HttpStatus.BAD_REQUEST);
     }
   }
@@ -134,17 +167,17 @@ export class TeacherService {
       const teacher: Teacher = await this.findById(teacher_Id);
       const city: City = await this.cityService.findById(cityId);
 
-      const teacherAddresCriteria : FindOneOptions = {where : {teacher_id : teacher_Id}};
-      const teacherAddress : TeacherAddress = await this.teacherAddressRepository.findOne(teacherAddresCriteria);
+      const teacherAddresCriteria: FindOneOptions = { where: { teacher_id: teacher_Id } };
+      const teacherAddress: TeacherAddress = await this.teacherAddressRepository.findOne(teacherAddresCriteria);
 
-      if(!teacherAddress) {
+      if (!teacherAddress) {
         throw new Error('The teacher does not have a valid address');
       }
 
-      if(address) {
+      if (address) {
         teacherAddress.setAddress(address);
       }
-      if(cityId) {
+      if (cityId) {
         teacherAddress.setCityId(city.getId());
       }
       await this.teacherAddressRepository.save(teacherAddress);

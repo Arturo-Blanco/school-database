@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from 
 import { TeacherService } from './teacher.service';
 import { CreateTeacherAddressDto, CreateTeacherDto, UpdateTeacherAddressDto, UpdateTeacherDto } from './dto/teacher.dto';
 import { Teacher } from './entities/teacher.entity';
+import { TeacherAddress } from 'src/city/entities/teacher.address.entity';
 
 @Controller('teacher')
 export class TeacherController {
@@ -30,6 +31,16 @@ export class TeacherController {
   @Get('all')
   async getFindAll(): Promise<Teacher[]> {
     return await this.teacherService.findAll();
+  }
+
+  @Get('studentAddress/:teacherId')
+  async getFindStudentAddress(@Param('teacherId', ParseIntPipe) teacherId: number): Promise<TeacherAddress | string> {
+    return await this.teacherService.findAddress(teacherId);
+  }
+
+  @Get('allAddress')
+  async getFindAllAddress(): Promise<TeacherAddress[] | string> {
+    return await this.teacherService.findAllAddress();
   }
 
   @Patch('update/:id')
